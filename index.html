@@ -234,91 +234,87 @@ sc.add(new THREE.GridHelper(8,16,0x152040,0x101830));
 sc.add(new THREE.Mesh(new THREE.PlaneGeometry(12,12),new THREE.MeshStandardMaterial({color:0x080e18,roughness:.95})).geometry?undefined:undefined);
 const gnd=new THREE.Mesh(new THREE.PlaneGeometry(12,12),new THREE.MeshStandardMaterial({color:0x080e18,roughness:.95}));gnd.rotation.x=-Math.PI/2;gnd.position.y=-0.01;sc.add(gnd);
 
-// Character
-const fig=new THREE.Group();sc.add(fig);
-const skC=0xeece9e,shC=0x2563eb,shD=0x1d4ed8,ptC=0x2a3345,soC=0x1a1f2e;
-
-function tb(c,r,p){const cv=new THREE.CatmullRomCurve3(p);return new THREE.Mesh(new THREE.TubeGeometry(cv,12,r,8,false),new THREE.MeshStandardMaterial({color:c,roughness:.45,metalness:.05}))}
-function bl(c,r,p){const m=new THREE.Mesh(new THREE.SphereGeometry(r,14,14),new THREE.MeshStandardMaterial({color:c,roughness:.35,metalness:.1}));m.position.copy(p);return m}
-
-// Static body
-fig.add(bl(skC,.12,new THREE.Vector3(0,1.72,0)));
-fig.add(tb(skC,.04,[new THREE.Vector3(0,1.60,0),new THREE.Vector3(0,1.54,0)]));
-fig.add(tb(shC,.11,[new THREE.Vector3(0,1.54,0),new THREE.Vector3(0,1.30,0),new THREE.Vector3(0,1.05,0)]));
-fig.add(tb(shD,.05,[new THREE.Vector3(-.14,1.50,0),new THREE.Vector3(.14,1.50,0)]));
-fig.add(tb(ptC,.07,[new THREE.Vector3(-.08,1.05,0),new THREE.Vector3(.08,1.05,0)]));
-fig.add(tb(ptC,.05,[new THREE.Vector3(-.08,1.05,0),new THREE.Vector3(-.08,.06,0)]));
-fig.add(bl(soC,.05,new THREE.Vector3(-.08,.04,0)));
-fig.add(tb(ptC,.05,[new THREE.Vector3(.08,1.05,0),new THREE.Vector3(.08,.06,0)]));
-fig.add(bl(soC,.05,new THREE.Vector3(.08,.04,0)));
-
-// Right arm (animated)
-const rArm=new THREE.Group();rArm.position.set(.14,1.48,0);fig.add(rArm);
-rArm.add(tb(shC,.04,[new THREE.Vector3(0,0,0),new THREE.Vector3(.08,-.22,.04)]));
-const rFA=new THREE.Group();rFA.position.set(.08,-.22,.04);
-rFA.add(tb(skC,.03,[new THREE.Vector3(0,0,0),new THREE.Vector3(.04,-.20,.05)]));
-const rHand=bl(0xdddddd,.025,new THREE.Vector3(.04,-.22,.05));
-rFA.add(rHand);
-rArm.add(rFA);
-
-// Left arm (static)
-const lA=new THREE.Group();lA.position.set(-.14,1.48,0);fig.add(lA);
-lA.add(tb(shC,.04,[new THREE.Vector3(0,0,0),new THREE.Vector3(-.06,-.22,.02)]));
-const lFA=new THREE.Group();lFA.position.set(-.06,-.22,.02);
-lFA.add(tb(skC,.03,[new THREE.Vector3(0,0,0),new THREE.Vector3(-.02,-.18,.04)]));
-lFA.add(bl(0xdddddd,.025,new THREE.Vector3(-.02,-.20,.04)));
-lA.add(lFA);
+// Character removed - focus on trail visualization
 
 // ===================== WRIST TRAIL =====================
-const TM=2000;
+const TM=3000;
 const tP=new Float32Array(TM*3),tC=new Float32Array(TM*3);
 const tG=new THREE.BufferGeometry();
 tG.setAttribute('position',new THREE.BufferAttribute(tP,3));
 tG.setAttribute('color',new THREE.BufferAttribute(tC,3));
 tG.setDrawRange(0,0);
-const tLine=new THREE.Line(tG,new THREE.LineBasicMaterial({vertexColors:true,transparent:true,opacity:.7,linewidth:1}));
+const tLine=new THREE.Line(tG,new THREE.LineBasicMaterial({vertexColors:true,transparent:true,opacity:.85,linewidth:2}));
 sc.add(tLine);
 
-const mk=new THREE.Mesh(new THREE.SphereGeometry(.02,10,10),new THREE.MeshBasicMaterial({color:0x22d97f}));
-const mkG=new THREE.Mesh(new THREE.SphereGeometry(.05,10,10),new THREE.MeshBasicMaterial({color:0x22d97f,transparent:true,opacity:.1}));
+// Trail tube (thicker, visible arc)
+let trailTube=null;
+function updateTrailTube(endIdx){
+  if(trailTube){sc.remove(trailTube);trailTube.geometry.dispose();trailTube.material.dispose();trailTube=null}
+  if(endIdx<2||!trailPts.length)return;
+  const pts=trailPts.slice(0,endIdx+1).map(p=>new THREE.Vector3(p.x,p.y,p.z));
+  if(pts.length<2)return;
+  const curve=new THREE.CatmullRomCurve3(pts);
+  const geo=new THREE.TubeGeometry(curve,Math.min(pts.length*2,200),0.012,6,false);
+  const mat=new THREE.MeshStandardMaterial({color:0x22d97f,emissive:0x22d97f,emissiveIntensity:0.3,roughness:0.3,metalness:0.2});
+  trailTube=new THREE.Mesh(geo,mat);
+  sc.add(trailTube);
+}
+
+const mk=new THREE.Mesh(new THREE.SphereGeometry(.035,12,12),new THREE.MeshBasicMaterial({color:0x22d97f}));
+const mkG=new THREE.Mesh(new THREE.SphereGeometry(.08,12,12),new THREE.MeshBasicMaterial({color:0x22d97f,transparent:true,opacity:.15}));
 mk.add(mkG);mk.visible=false;sc.add(mk);
 
-// Compute wrist world positions from arm kinematics for each frame
+// Impact flash
+const impFlash=new THREE.Mesh(new THREE.SphereGeometry(.12,16,16),new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:0}));
+sc.add(impFlash);
+
+// Compute swing arc from gyro data - integrated angular position
 let trailPts=[];
 function buildTrail(){
   trailPts=[];
   const s=sets[aIdx];if(!s)return;
-  const gS=2.0/s.mxG;
-  for(let i=0;i<s.data.length;i++){
-    const d=s.data[i];
-    // Compute arm angles
-    const aRx=-d.gy*gS*.8-.3;
-    const aRz=d.gx*gS*.4;
-    const fRx=d.gz*gS*.5;
-    const fRy=d.gx*gS*.25;
-    // Shoulder pos
-    const sx=.14,sy=1.48,sz=0;
-    // Upper arm end (local: .08,-.22,.04 rotated by arm angles)
-    const ca=Math.cos(aRx),sa=Math.sin(aRx);
-    const cz=Math.cos(aRz),sz2=Math.sin(aRz);
-    let ex=.08,ey=-.22,ez=.04;
-    // Rotate around X
-    let ny=ey*ca-ez*sa,nz=ey*sa+ez*ca;ey=ny;ez=nz;
-    // Rotate around Z
-    let nx=ex*cz-ey*sz2;ny=ex*sz2+ey*cz;ex=nx;ey=ny;
-    const elbX=sx+ex,elbY=sy+ey,elbZ=sz+ez;
-    // Forearm end (local: .04,-.20,.05 rotated by forearm angles)
-    let hx=.04,hy=-.22,hz=.05;
-    const cf=Math.cos(fRx),sf=Math.sin(fRx);
-    ny=hy*cf-hz*sf;nz=hy*sf+hz*cf;hy=ny;hz=nz;
-    const cfy=Math.cos(fRy),sfy=Math.sin(fRy);
-    nx=hx*cfy+hz*sfy;let nz2=(-hx*sfy)+hz*cfy;hx=nx;hz=nz2;
-    // Also apply parent arm rotation
-    ny=hy*ca-hz*sa;nz=hy*sa+hz*ca;hy=ny;hz=nz;
-    nx=hx*cz-hy*sz2;ny=hx*sz2+hy*cz;hx=nx;hy=ny;
-    const wx=elbX+hx,wy=elbY+hy,wz=elbZ+hz;
-    trailPts.push({x:wx,y:wy,z:wz});
+  const d=s.data;
+  
+  // Integrate gyroscope to get angular position
+  let angX=0, angY=0, angZ=0;
+  const armLen=1.8; // full arm + club length in scene units
+  
+  // Starting position: address position (hands in front, club down)
+  const originY=1.0; // hip height
+  
+  for(let i=0;i<d.length;i++){
+    const dt=i>0?(d[i].ts-d[i-1].ts):0.01;
+    
+    // Integrate angular velocity to get angle
+    angX+=d[i].gx*dt;
+    angY+=d[i].gy*dt;
+    angZ+=d[i].gz*dt;
+    
+    // Map integrated angles to 3D swing arc
+    // Y-rotation = main swing plane (backswing to follow-through)
+    // X-rotation = elevation (club going up and down)
+    // Z-rotation = wrist roll
+    
+    const swingH=Math.sin(angY)*armLen*0.7;  // horizontal sweep
+    const swingV=Math.cos(angY)*armLen*0.3;   // vertical component from swing
+    const elev=Math.sin(angX)*armLen*0.4;     // up/down from elevation
+    const side=Math.sin(angZ)*armLen*0.2;     // lateral movement
+    
+    const wx=swingH+side;
+    const wy=originY+elev+swingV;
+    const wz=Math.cos(angY)*armLen*0.5;
+    
+    trailPts.push({x:wx,y:Math.max(wy,0.02),z:wz});
   }
+  
+  // Auto-center the trail
+  if(trailPts.length>0){
+    let cx=0,cy=0,cz=0;
+    trailPts.forEach(p=>{cx+=p.x;cy+=p.y;cz+=p.z});
+    cx/=trailPts.length;cy/=trailPts.length;cz/=trailPts.length;
+    trailPts.forEach(p=>{p.x-=cx;p.y-=cy+0.5;p.z-=cz}); // center and raise
+  }
+  
   // Fill buffer
   const mxa=s.mxA;
   for(let i=0;i<trailPts.length&&i<TM;i++){
@@ -331,28 +327,23 @@ function buildTrail(){
   mk.visible=true;
 }
 function tCol(i,t){tC[i*3]=.13+t*.87;tC[i*3+1]=.85-t*.5;tC[i*3+2]=.5-t*.3}
-function clearTrail(){tG.setDrawRange(0,0);mk.visible=false;trailPts=[]}
+function clearTrail(){tG.setDrawRange(0,0);mk.visible=false;trailPts=[];if(trailTube){sc.remove(trailTube);trailTube.geometry.dispose();trailTube.material.dispose();trailTube=null}impFlash.material.opacity=0}
 
-// ===================== ANIMATE =====================
-function animateArm(d){
-  const s=sets[aIdx];if(!s){rArm.rotation.set(-.3,0,0);rFA.rotation.set(0,0,0);return}
-  const gS=2.0/s.mxG;
-  rArm.rotation.x=-d.gy*gS*.8-.3;
-  rArm.rotation.z=d.gx*gS*.4;
-  rFA.rotation.x=d.gz*gS*.5;
-  rFA.rotation.y=d.gx*gS*.25;
-}
-
+// ===================== PHASE =====================
 function getPhase(idx){const s=sets[aIdx];if(!s)return'READY';const p=idx/s.data.length,t2=s.data[idx].ta/s.mxA;if(p<.05)return'ADDRESS';if(p<.35)return'BACKSWING';if(p<.5&&t2>.4)return'TRANSITION';if(p<.6)return'DOWNSWING';if(t2>.65)return'IMPACT';if(p<.85)return'FOLLOW-THROUGH';return'FINISH'}
 const phCo={'READY':'#4e6180','ADDRESS':'#3b82f6','BACKSWING':'#06b6d4','TRANSITION':'#f59e0b','DOWNSWING':'#f59e0b','IMPACT':'#ef4444','FOLLOW-THROUGH':'#a855f7','FINISH':'#22d97f'};
 
 function updateAt(t){
-  const s=sets[aIdx];if(!s)return;
+  if(!sets.length)return;
+  const s=sets[aIdx];
   const idx=Math.min(Math.floor(t*(s.data.length-1)),s.data.length-1);
   const d=s.data[idx];
-  animateArm(d);
   tG.setDrawRange(0,idx+1);
+  if(idx%5===0)updateTrailTube(idx);
   if(trailPts[idx])mk.position.set(trailPts[idx].x,trailPts[idx].y,trailPts[idx].z);
+  // Impact flash
+  const impDist=Math.abs(idx-s.impIdx);
+  if(impDist<10){impFlash.material.opacity=Math.max(0,(10-impDist)/10*0.6);impFlash.position.copy(mk.position);impFlash.scale.setScalar(1+impDist*0.1)}else{impFlash.material.opacity=0}
   const ph=getPhase(idx);
   const pe=document.getElementById('plbl');pe.textContent=ph;pe.style.color=phCo[ph]||'#4e6180';pe.style.background=(phCo[ph]||'#4e6180')+'15';
   document.getElementById('va').innerHTML=d.ta.toFixed(4)+'<span class="u">G</span>';
@@ -393,12 +384,10 @@ window.addEventListener('resize',resize);resize();
   cam.position.x=Math.sin(cTh)*Math.cos(cPh)*cD;
   cam.position.y=Math.sin(cPh)*cD;
   cam.position.z=Math.cos(cTh)*Math.cos(cPh)*cD;
-  cam.lookAt(0,1.1,0);
+  cam.lookAt(0,0.5,0);
   pl.intensity=.22+Math.sin(Date.now()*.001)*.04;
   R.render(sc,cam);
 })(0);
-
-animateArm({gx:0,gy:0,gz:0});
 </script>
 <script>if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js')}</script>
 </body>

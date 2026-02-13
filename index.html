@@ -41,7 +41,7 @@ body{font-family:var(--S);background:var(--bg);color:var(--tx);height:100vh;over
 .ph-b{position:absolute;top:10px;right:12px;font-family:var(--M);font-size:9px;padding:4px 10px;border-radius:5px;background:rgba(34,217,127,.1);color:var(--g);font-weight:600;letter-spacing:.5px;pointer-events:none}
 
 /* Timeline bar over viewport */
-.tl{position:absolute;bottom:8px;left:10px;right:10px;display:flex;align-items:center;gap:6px}
+.tl{position:absolute;bottom:36px;left:10px;right:10px;display:flex;align-items:center;gap:6px}
 .tl-b{width:30px;height:30px;border-radius:6px;border:1px solid var(--bdr);background:rgba(17,26,40,.85);backdrop-filter:blur(8px);color:var(--g);font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .tl-b:hover{background:var(--gd)}
 .tl-t{flex:1;height:4px;background:rgba(255,255,255,.05);border-radius:2px;cursor:pointer;position:relative}
@@ -93,11 +93,12 @@ body{font-family:var(--S);background:var(--bg);color:var(--tx);height:100vh;over
 <body>
 <div class="app">
 <header class="hdr">
-  <div class="logo"><div class="logo-i">&#9971;</div><div class="logo-n">Swing<span>Lab</span></div></div>
+  <div class="logo"><div class="logo-i">&#9971;</div><div class="logo-n">Swing<span>Lab</span></div>
+    <button class="btn" style="margin-left:10px" onclick="document.getElementById('fi').click()">+ CSV</button>
+  </div>
   <div class="hdr-r">
-    <button class="btn" onclick="document.getElementById('fi').click()">+ CSV</button>
-    <button class="btn rd" id="bcl" style="display:none" onclick="clearAll()">Clear</button>
     <span class="fcnt" id="fcnt"></span>
+    <button class="btn rd" id="bcl" style="display:none" onclick="clearAll()">Clear</button>
     <input type="file" id="fi" accept=".csv" multiple>
   </div>
 </header>
@@ -351,7 +352,7 @@ bearG.add(clubHead);
 
 // Position bear - right-handed stance (left shoulder toward target +Z)
 bearG.position.set(0,0,-0.3);
-bearG.rotation.y=-Math.PI/2; // face +X, left shoulder toward +Z (target)
+bearG.rotation.y=Math.PI; // 180 degrees
 sc.add(bearG);
 
 // ===================== SWING TRAIL (ribbon/fan) =====================

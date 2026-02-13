@@ -278,7 +278,7 @@ let trail=[];
 function buildTrail(){
   if(!D.length)return;trail=[];
   const scale=3.0/mxA;
-  let vx=0,vy=0,vz=0,px=0.6,py=1.2,pz=0;
+  let vx=0,vy=0,vz=0,px=0.3,py=0.9,pz=0.15;
   const damp=0.92;
   for(let i=0;i<D.length;i++){
     const d=D[i],dt=i>0?(d.ts-D[i-1].ts):0.01;
@@ -315,7 +315,7 @@ function updateAt(t){
   const d=D[idx];
   tGeo.setDrawRange(0,idx+1);
   if(trail[idx])marker.position.set(trail[idx].x,trail[idx].y,trail[idx].z);
-  animateFigure(idx);
+  // Figure stays static - only trail moves
   const phase=getPhase(idx);
   const pb=document.getElementById('phb');
   pb.textContent=phase;pb.style.color=phCols[phase]||'#4e6180';

@@ -15,8 +15,8 @@
 <style>
 :root{--bg:#060a12;--bg2:#0c1219;--card:#111a28;--border:rgba(255,255,255,0.05);--g:#22d97f;--gd:rgba(34,217,127,0.1);--cy:#06b6d4;--bl:#3b82f6;--or:#f59e0b;--rd:#ef4444;--pu:#a855f7;--pk:#ec4899;--tx:#eef2f7;--tx2:#8a9bb5;--tx3:#4e6180;--m:'JetBrains Mono',monospace;--s:'Outfit',sans-serif}
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:var(--s);background:var(--bg);color:var(--tx);height:100vh;overflow:hidden}
-.app{display:grid;grid-template-columns:1fr 380px;grid-template-rows:50px 1fr;height:100vh}
+body{font-family:var(--s);background:var(--bg);color:var(--tx);height:100vh;overflow:hidden;padding-top:env(safe-area-inset-top)}
+.app{display:grid;grid-template-columns:1fr 380px;grid-template-rows:50px 1fr;height:calc(100vh - env(safe-area-inset-top))}
 .hdr{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;padding:0 18px;border-bottom:1px solid var(--border);background:rgba(6,10,18,0.94);backdrop-filter:blur(14px);z-index:10}
 .logo{display:flex;align-items:center;gap:10px}
 .logo-i{width:30px;height:30px;background:linear-gradient(135deg,var(--g),var(--cy));border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;box-shadow:0 0 16px rgba(34,217,127,0.2)}

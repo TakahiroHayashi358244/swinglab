@@ -298,14 +298,11 @@ function buildTrail(){
 }
 
 // ========== ANIMATE FIGURE ==========
+// Figure stays static at all times
 function animateFigure(idx){
-  if(!D.length)return;
-  const d=D[idx];
-  const gScale=2.0/mxG;
-  // Body rotation from gyroscope
-  fig.rotation.y=d.gy*gScale*0.6;  // horizontal rotation
-  fig.rotation.x=d.gx*gScale*0.3;  // tilt forward/back
-  fig.rotation.z=d.gz*gScale*0.2;  // side tilt
+  fig.rotation.x=0;
+  fig.rotation.y=0;
+  fig.rotation.z=0;
 }
 
 // ========== PLAYBACK ==========
@@ -315,7 +312,7 @@ function updateAt(t){
   const d=D[idx];
   tGeo.setDrawRange(0,idx+1);
   if(trail[idx])marker.position.set(trail[idx].x,trail[idx].y,trail[idx].z);
-  // Figure stays static - only trail moves
+  animateFigure(idx); // keep figure static
   const phase=getPhase(idx);
   const pb=document.getElementById('phb');
   pb.textContent=phase;pb.style.color=phCols[phase]||'#4e6180';

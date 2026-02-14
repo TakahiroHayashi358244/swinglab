@@ -3,162 +3,234 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="SwingLab">
-<meta name="theme-color" content="#060a12">
-<link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="icon-192.png">
 <title>SwingLab</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<link rel="manifest" href="manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#060a12">
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#060a12;--bg2:#0b1018;--card:#111a28;--bdr:rgba(255,255,255,0.05);--g:#22d97f;--gd:rgba(34,217,127,0.08);--cy:#06b6d4;--bl:#3b82f6;--or:#f59e0b;--rd:#ef4444;--pu:#a855f7;--pk:#ec4899;--tx:#eef2f7;--tx2:#8a9bb5;--tx3:#4e6180;--M:'JetBrains Mono',monospace;--S:'Outfit',sans-serif}
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:var(--S);background:var(--bg);color:var(--tx);height:100vh;overflow:hidden;padding-top:env(safe-area-inset-top)}
-.app{display:grid;grid-template-rows:44px 1fr;height:calc(100vh - env(safe-area-inset-top))}
+body{font-family:var(--S);background:var(--bg);color:var(--tx);min-height:100vh;padding-top:env(safe-area-inset-top)}
+.app{display:flex;flex-direction:column;min-height:100vh}
 
 /* Header */
-.hdr{display:flex;align-items:center;justify-content:space-between;padding:0 14px;border-bottom:1px solid var(--bdr);background:rgba(6,10,18,.94);backdrop-filter:blur(14px);z-index:10}
+.hdr{display:flex;align-items:center;justify-content:space-between;padding:0 14px;height:48px;border-bottom:1px solid var(--bdr);background:rgba(6,10,18,.94);backdrop-filter:blur(14px);position:sticky;top:0;z-index:10}
 .logo{display:flex;align-items:center;gap:8px}
-.logo-i{width:26px;height:26px;background:linear-gradient(135deg,var(--g),var(--cy));border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:12px;box-shadow:0 0 12px rgba(34,217,127,.15)}
-.logo-n{font-weight:700;font-size:14px}.logo-n span{color:var(--g)}
-.hdr-r{display:flex;align-items:center;gap:6px}
-.btn{padding:5px 11px;border-radius:6px;border:1px solid rgba(34,217,127,.3);background:transparent;color:var(--g);font-family:var(--S);font-size:10px;font-weight:500;cursor:pointer;transition:.15s}
+.logo-i{width:28px;height:28px;background:linear-gradient(135deg,var(--g),var(--cy));border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;box-shadow:0 0 12px rgba(34,217,127,.15)}
+.logo-n{font-weight:700;font-size:15px}.logo-n span{color:var(--g)}
+.hdr-r{display:flex;align-items:center;gap:8px}
+.btn{padding:6px 14px;border-radius:6px;border:1px solid rgba(34,217,127,.3);background:transparent;color:var(--g);font-family:var(--S);font-size:11px;font-weight:500;cursor:pointer;transition:.15s}
 .btn:hover{background:var(--gd)}.btn.rd{border-color:rgba(239,68,68,.3);color:var(--rd)}.btn.rd:hover{background:rgba(239,68,68,.06)}
-.fcnt{font-family:var(--M);font-size:9px;color:var(--tx3)}
+.fcnt{font-family:var(--M);font-size:10px;color:var(--tx3)}
 #fi{display:none}
 
-/* Body */
-.bod{display:grid;grid-template-columns:1fr 320px;overflow:hidden}
+/* Main content */
+.main{flex:1;overflow-y:auto;padding:12px;padding-bottom:calc(12px + env(safe-area-inset-bottom));max-width:600px;margin:0 auto;width:100%}
+.main::-webkit-scrollbar{width:3px}.main::-webkit-scrollbar-thumb{background:rgba(255,255,255,.06)}
 
-/* Main 3D viewport */
-.vp{position:relative;overflow:hidden}
-#c3d{width:100%;height:100%;display:block}
-.vp-tl{position:absolute;top:10px;left:12px;pointer-events:none}
-.vp-lb{font-family:var(--M);font-size:7px;color:var(--tx3);letter-spacing:1px;text-transform:uppercase}
-.vp-v{font-size:18px;font-weight:700;letter-spacing:-.4px;margin-top:0}.vp-v .u{font-size:9px;color:var(--tx3);margin-left:2px;font-weight:400}
-.ph-b{position:absolute;top:10px;right:12px;font-family:var(--M);font-size:9px;padding:4px 10px;border-radius:5px;background:rgba(34,217,127,.1);color:var(--g);font-weight:600;letter-spacing:.5px;pointer-events:none}
+/* Club badge */
+.club-badge{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:10px;background:linear-gradient(135deg,rgba(34,217,127,.08),rgba(6,182,212,.08));border:1px solid rgba(34,217,127,.2);margin-bottom:10px}
+.club-icon{font-size:28px}
+.club-info{flex:1}
+.club-name{font-family:var(--M);font-size:20px;font-weight:700;color:var(--tx)}
+.club-file{font-size:10px;color:var(--tx3);margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
-/* Timeline bar over viewport */
-.tl{position:absolute;bottom:36px;left:10px;right:10px;display:flex;align-items:center;gap:6px}
-.tl-b{width:30px;height:30px;border-radius:6px;border:1px solid var(--bdr);background:rgba(17,26,40,.85);backdrop-filter:blur(8px);color:var(--g);font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.tl-b:hover{background:var(--gd)}
-.tl-t{flex:1;height:4px;background:rgba(255,255,255,.05);border-radius:2px;cursor:pointer;position:relative}
-.tl-f{height:100%;background:linear-gradient(90deg,var(--g),var(--cy));border-radius:2px;width:0;pointer-events:none}
-.tl-m{font-family:var(--M);font-size:8px;color:var(--tx3);min-width:34px;text-align:right}
-.tl input[type=range]{width:40px;accent-color:var(--g)}
-.tl .sv{font-family:var(--M);font-size:8px;color:var(--g);min-width:22px}
+/* Section */
+.sec{margin-bottom:12px}
+.sec-t{font-size:9px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;padding-left:2px}
 
-/* Side panel */
-.side{display:flex;flex-direction:column;border-left:1px solid var(--bdr);background:var(--bg2);overflow-y:auto}
-.side::-webkit-scrollbar{width:2px}.side::-webkit-scrollbar-thumb{background:rgba(255,255,255,.04)}
-
-/* Metrics */
-.mets{padding:8px 10px}
-.mg{display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px}
-.mi{padding:6px 7px;border-radius:5px;background:var(--card);border:1px solid var(--bdr);text-align:center}
-.mi-l{font-size:7px;color:var(--tx3);text-transform:uppercase;letter-spacing:.3px;margin-bottom:1px}
-.mi-v{font-family:var(--M);font-size:12px;font-weight:600}.mi-u{font-size:7px;color:var(--tx3)}
+/* Metrics grid */
+.mg{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+.mi{padding:10px 8px;border-radius:8px;background:var(--card);border:1px solid var(--bdr);text-align:center}
+.mi-l{font-size:8px;color:var(--tx3);text-transform:uppercase;letter-spacing:.3px;margin-bottom:3px}
+.mi-v{font-family:var(--M);font-size:16px;font-weight:600}.mi-u{font-size:8px;color:var(--tx3)}
 .cg{color:var(--g)}.cp{color:var(--pu)}.co{color:var(--or)}.cc{color:var(--cy)}.cb{color:var(--bl)}.cr{color:var(--rd)}
 
 /* Charts */
-.cpan{padding:6px 10px 3px;border-top:1px solid var(--bdr)}
-.cp-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:2px}
-.cp-t{font-size:8px;font-weight:600;color:var(--tx2);text-transform:uppercase;letter-spacing:.3px}
-.cp-i{font-family:var(--M);font-size:7px;color:var(--or)}
-.cp-c{height:60px;position:relative}
+.cpan{padding:10px;border-radius:8px;background:var(--card);border:1px solid var(--bdr);margin-bottom:6px}
+.cp-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.cp-t{font-size:9px;font-weight:600;color:var(--tx2);text-transform:uppercase;letter-spacing:.3px}
+.cp-i{font-family:var(--M);font-size:8px;color:var(--or)}
+.cp-c{height:80px;position:relative}
 .cp-c canvas{width:100%;height:100%;display:block}
-.cp-lg{display:flex;gap:8px;padding-top:1px}
-.cp-lg i{display:inline-block;width:6px;height:6px;border-radius:1px;margin-right:2px;vertical-align:middle}
-.cp-lg span{font-size:7px;color:var(--tx3)}
+.cp-lg{display:flex;gap:10px;padding-top:4px}
+.cp-lg i{display:inline-block;width:7px;height:7px;border-radius:2px;margin-right:3px;vertical-align:middle}
+.cp-lg span{font-size:8px;color:var(--tx3)}
 
 /* File list */
-.fls{padding:6px 10px;border-top:1px solid var(--bdr)}
-.fl-t{font-size:7px;color:var(--tx3);text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px}
-.fl-i{display:flex;align-items:center;gap:4px;padding:2px 0;cursor:pointer;font-size:8px;color:var(--tx2)}
-.fl-i.act{color:var(--tx)}
-.fl-d{width:7px;height:7px;border-radius:2px;flex-shrink:0}
-.fl-n{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:var(--M);font-size:7px}
+.fls{margin-bottom:6px}
+.fl-t{font-size:9px;color:var(--tx3);text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px;font-weight:600}
+.fl-i{display:flex;align-items:center;gap:8px;padding:10px 12px;cursor:pointer;font-size:11px;color:var(--tx2);border-radius:8px;background:var(--card);border:1px solid var(--bdr);margin-bottom:5px;transition:background .15s}
+.fl-i:active{background:rgba(255,255,255,.04)}
+.fl-i.act{color:var(--tx);border-color:rgba(34,217,127,.3);background:rgba(34,217,127,.06)}
+.fl-d{width:10px;height:10px;border-radius:3px;flex-shrink:0}
+.fl-n{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:var(--M);font-size:10px}
+
+/* Advice Panel */
+.adv-pan{margin-bottom:12px}
+.adv-t{font-size:13px;font-weight:700;color:var(--g);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.adv-score{display:flex;align-items:center;gap:14px;margin-bottom:12px;padding:14px;border-radius:10px;background:rgba(34,217,127,.06);border:1px solid rgba(34,217,127,.15)}
+.adv-ring{width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--M);font-size:26px;font-weight:700;border:3px solid var(--g);flex-shrink:0}
+.adv-grade{font-size:13px;color:var(--tx2)}
+.adv-grade b{display:block;font-size:18px;color:var(--tx);margin-bottom:3px}
+.adv-items{display:flex;flex-direction:column;gap:8px}
+.adv-item{padding:10px 12px;border-radius:8px;background:var(--card);border:1px solid var(--bdr);cursor:pointer;transition:background .15s}
+.adv-item:active{background:rgba(255,255,255,.04)}
+.adv-item-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.adv-item-n{font-size:13px;font-weight:600;color:var(--tx2)}
+.adv-item-s{font-family:var(--M);font-size:14px;font-weight:600}
+.adv-bar{height:5px;border-radius:3px;background:rgba(255,255,255,.06);overflow:hidden;margin-bottom:5px}
+.adv-bar-f{height:100%;border-radius:3px;transition:width .4s}
+.adv-tip{font-size:13px;color:var(--tx3);line-height:1.5}
+.adv-detail{max-height:0;overflow:hidden;transition:max-height .3s ease;font-size:13px;color:var(--tx2);line-height:1.6}
+.adv-detail.open{max-height:300px;margin-top:8px;padding-top:8px;border-top:1px solid var(--bdr)}
+.adv-detail-inner{padding:0 2px}
+/* Radar chart */
+.radar-wrap{padding:14px;border-radius:10px;background:var(--card);border:1px solid var(--bdr);margin-top:10px;margin-bottom:10px;text-align:center}
+.radar-title{font-size:11px;font-weight:600;color:var(--tx3);text-transform:uppercase;letter-spacing:.3px;margin-bottom:8px}
+.radar-canvas{width:100%;max-width:300px;margin:0 auto;display:block}
+
+.s-good{color:var(--g)}.s-ok{color:var(--or)}.s-bad{color:var(--rd)}
+.ai-btn{width:100%;margin-top:10px;padding:12px;border-radius:8px;border:1px solid rgba(34,217,127,.3);background:rgba(34,217,127,.08);color:var(--g);font-family:var(--S);font-size:12px;font-weight:600;cursor:pointer;transition:.2s}
+.ai-btn:hover{background:rgba(34,217,127,.15)}
+.ai-btn:disabled{opacity:.5;cursor:wait}
+.ai-res{margin-top:8px;padding:12px;border-radius:8px;background:var(--card);border:1px solid var(--bdr);font-size:11px;color:var(--tx2);line-height:1.6;max-height:400px;overflow-y:auto;white-space:pre-wrap}
 
 /* Empty state */
-.empty{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;pointer-events:none}
-.empty .ic{font-size:40px;opacity:.12;margin-bottom:8px}
-.empty h3{font-size:13px;font-weight:600;color:var(--tx2);margin-bottom:4px}
-.empty p{font-size:11px;color:var(--tx3)}
+.empty{padding:80px 20px;text-align:center}
+.empty .ic{font-size:48px;opacity:.15;margin-bottom:12px}
+.empty h3{font-size:15px;font-weight:600;color:var(--tx2);margin-bottom:6px}
+.empty p{font-size:12px;color:var(--tx3)}
 
-@media(max-width:700px){.bod{grid-template-columns:1fr}.side{position:absolute;right:0;top:44px;bottom:0;width:260px;transform:translateX(100%);transition:.3s;z-index:20}.side.open{transform:translateX(0)}}
+/* Mobile responsive */
+@media(max-width:480px){
+  .hdr{padding:0 10px;height:44px}
+  .logo-i{width:24px;height:24px;font-size:11px}
+  .logo-n{font-size:13px}
+  .btn{padding:5px 10px;font-size:10px}
+  .main{padding:8px}
+  .mg{grid-template-columns:1fr 1fr;gap:5px}
+  .mi{padding:8px 6px}
+  .mi-v{font-size:14px}
+  .mi-l{font-size:7px}
+  .cpan{padding:8px}
+  .cp-c{height:70px}
+  .club-badge{padding:8px 10px;gap:8px}
+  .club-icon{font-size:24px}
+  .club-name{font-size:17px}
+  .adv-score{padding:10px;gap:10px}
+  .adv-ring{width:52px;height:52px;font-size:22px}
+  .adv-grade b{font-size:16px}
+  .adv-grade{font-size:12px}
+  .adv-item-n{font-size:12px}
+  .adv-item-s{font-size:12px}
+  .adv-tip{font-size:12px}
+  .adv-detail{font-size:12px}
+  .radar-canvas{max-width:260px}
+}
+
+@media(max-width:360px){
+  .mg{grid-template-columns:1fr 1fr}
+  .mi-v{font-size:12px}
+  .club-name{font-size:15px}
+  .adv-ring{width:46px;height:46px;font-size:20px}
+  .radar-canvas{max-width:230px}
+}
 </style>
 </head>
 <body>
 <div class="app">
 <header class="hdr">
-  <div class="logo"><div class="logo-i">&#9971;</div><div class="logo-n">Swing<span>Lab</span></div>
-    <button class="btn" style="margin-left:10px" onclick="document.getElementById('fi').click()">+ CSV</button>
+  <div class="logo">
+    <div class="logo-i">&#9971;</div>
+    <div class="logo-n">Swing<span>Lab</span></div>
   </div>
   <div class="hdr-r">
+    <button class="btn" onclick="document.getElementById('fi').click()">+ CSV</button>
     <span class="fcnt" id="fcnt"></span>
     <button class="btn rd" id="bcl" style="display:none" onclick="clearAll()">Clear</button>
     <input type="file" id="fi" accept=".csv" multiple>
   </div>
 </header>
-<div class="bod">
 
-<!-- Main 3D viewport -->
-<div class="vp" id="vp">
-  <canvas id="c3d"></canvas>
-  <div class="vp-tl">
-    <div class="vp-lb">Accel</div>
-    <div class="vp-v" id="va">--<span class="u">G</span></div>
-    <div style="height:3px"></div>
-    <div class="vp-lb">Gyro</div>
-    <div class="vp-v" id="vg">--<span class="u">r/s</span></div>
-  </div>
-  <div class="ph-b" id="plbl">READY</div>
+<div class="main" id="mainContent">
+  <!-- Empty state -->
   <div class="empty" id="emp">
     <div class="ic">&#9971;</div>
     <h3>CSVを読み込む</h3>
-    <p>複数ファイルの重ね合わせ比較が可能</p>
-  </div>
-  <div class="tl" id="tlbar" style="display:none">
-    <button class="tl-b" id="bp">&#9654;</button>
-    <div class="tl-t" id="trk"><div class="tl-f" id="tfl"></div></div>
-    <div class="tl-m" id="ttm">0.00s</div>
-    <input type="range" min="0.1" max="3" step="0.1" value="0.5" id="spdr">
-    <span class="sv" id="svl">0.5x</span>
-  </div>
-</div>
-
-<!-- Side panel -->
-<div class="side" id="side">
-  <div class="mets"><div class="mg" id="mgrid">
-    <div class="mi"><div class="mi-l">Max Acc</div><div class="mi-v cg" id="xma">--</div></div>
-    <div class="mi"><div class="mi-l">Max Gyro</div><div class="mi-v cp" id="xmg">--</div></div>
-    <div class="mi"><div class="mi-l">Duration</div><div class="mi-v co" id="xdu">--</div></div>
-    <div class="mi"><div class="mi-l">Samples</div><div class="mi-v cc" id="xsc">--</div></div>
-    <div class="mi"><div class="mi-l">Hz</div><div class="mi-v cb" id="xsr">--</div></div>
-    <div class="mi"><div class="mi-l">Impact</div><div class="mi-v cr" id="xit">--</div></div>
-  </div></div>
-
-  <div class="cpan">
-    <div class="cp-h"><span class="cp-t">Acceleration</span><span class="cp-i" id="i1"></span></div>
-    <div class="cp-c"><canvas id="cv1"></canvas></div>
-    <div class="cp-lg"><span><i style="background:#22d97f"></i>X</span><span><i style="background:#3b82f6"></i>Y</span><span><i style="background:#f59e0b"></i>Z</span></div>
-  </div>
-  <div class="cpan">
-    <div class="cp-h"><span class="cp-t">Gyroscope</span><span class="cp-i" id="i2"></span></div>
-    <div class="cp-c"><canvas id="cv2"></canvas></div>
-    <div class="cp-lg"><span><i style="background:#a855f7"></i>X</span><span><i style="background:#ec4899"></i>Y</span><span><i style="background:#06b6d4"></i>Z</span></div>
-  </div>
-  <div class="cpan">
-    <div class="cp-h"><span class="cp-t">Total Magnitude</span><span class="cp-i" id="i3"></span></div>
-    <div class="cp-c"><canvas id="cv3"></canvas></div>
-    <div class="cp-lg"><span><i style="background:#22d97f"></i>Acc</span><span><i style="background:#a855f7"></i>Gyro</span></div>
+    <p>Apple Watchで記録したスイングデータを分析します</p>
   </div>
 
-  <div class="fls" id="fls"></div>
-</div>
+  <!-- Content (hidden until CSV loaded) -->
+  <div id="dataContent" style="display:none">
 
+    <!-- Club badge -->
+    <div class="club-badge" id="clubBadge">
+      <div class="club-icon" id="clubIcon">🏌️</div>
+      <div class="club-info">
+        <div class="club-name" id="clubName">--</div>
+        <div class="club-file" id="clubFile"></div>
+      </div>
+    </div>
+
+    <!-- Metrics -->
+    <div class="sec">
+      <div class="sec-t">Metrics</div>
+      <div class="mg">
+        <div class="mi"><div class="mi-l">Max Acc</div><div class="mi-v cg" id="xma">--</div></div>
+        <div class="mi"><div class="mi-l">Max Gyro</div><div class="mi-v cp" id="xmg">--</div></div>
+        <div class="mi"><div class="mi-l">Duration</div><div class="mi-v co" id="xdu">--</div></div>
+        <div class="mi"><div class="mi-l">Samples</div><div class="mi-v cc" id="xsc">--</div></div>
+        <div class="mi"><div class="mi-l">Hz</div><div class="mi-v cb" id="xsr">--</div></div>
+        <div class="mi"><div class="mi-l">Impact</div><div class="mi-v cr" id="xit">--</div></div>
+      </div>
+    </div>
+
+    <!-- Charts -->
+    <div class="sec">
+      <div class="sec-t">Charts</div>
+      <div class="cpan">
+        <div class="cp-h"><span class="cp-t">Acceleration</span><span class="cp-i" id="i1"></span></div>
+        <div class="cp-c"><canvas id="cv1"></canvas></div>
+        <div class="cp-lg"><span><i style="background:#22d97f"></i>X</span><span><i style="background:#3b82f6"></i>Y</span><span><i style="background:#f59e0b"></i>Z</span></div>
+      </div>
+      <div class="cpan">
+        <div class="cp-h"><span class="cp-t">Gyroscope</span><span class="cp-i" id="i2"></span></div>
+        <div class="cp-c"><canvas id="cv2"></canvas></div>
+        <div class="cp-lg"><span><i style="background:#a855f7"></i>X</span><span><i style="background:#ec4899"></i>Y</span><span><i style="background:#06b6d4"></i>Z</span></div>
+      </div>
+      <div class="cpan">
+        <div class="cp-h"><span class="cp-t">Total Magnitude</span><span class="cp-i" id="i3"></span></div>
+        <div class="cp-c"><canvas id="cv3"></canvas></div>
+        <div class="cp-lg"><span><i style="background:#22d97f"></i>Acc</span><span><i style="background:#a855f7"></i>Gyro</span></div>
+      </div>
+    </div>
+
+    <!-- Files -->
+    <div class="sec">
+      <div class="fls" id="fls"></div>
+    </div>
+
+    <!-- Swing Analysis -->
+    <div class="sec">
+      <div class="adv-pan" id="advPan">
+        <div class="adv-t">&#9971; Swing Analysis</div>
+        <div class="adv-score">
+          <div class="adv-ring" id="advRing">--</div>
+          <div class="adv-grade"><b id="advGrade">--</b><span id="advSummary"></span></div>
+        </div>
+        <div class="adv-items" id="advItems"></div>
+        <div class="radar-wrap" id="radarWrap" style="display:none">
+          <div class="radar-title">Balance</div>
+          <canvas class="radar-canvas" id="radarCv"></canvas>
+        </div>
+        <button class="ai-btn" id="aiBtn" onclick="askAI()">&#x1F916; AIに詳細アドバイスを聞く</button>
+        <div class="ai-res" id="aiRes" style="display:none"></div>
+      </div>
+    </div>
+
+  </div>
 </div>
 </div>
 
@@ -169,30 +241,60 @@ const COLS=[
   {ax:'#10b981',ay:'#6366f1',az:'#fb923c',gx:'#c084fc',gy:'#f472b6',gz:'#22d3ee',ta:'#10b981',tg:'#c084fc'},
   {ax:'#34d399',ay:'#818cf8',az:'#fbbf24',gx:'#d8b4fe',gy:'#f9a8d4',gz:'#67e8f9',ta:'#34d399',tg:'#d8b4fe'},
 ];
-let sets=[],aIdx=0,playing=false,prog=0,spd=0.5,lastT=0;
+let sets=[],aIdx=0;
 
 function parseCSV(t){const ls=t.trim().split('\n');const r=[];for(let i=1;i<ls.length;i++){const c=ls[i].replace(/\r/,'').split(',');if(c.length<7)continue;const ax=+c[1],ay=+c[2],az=+c[3],gx=+c[4],gy=+c[5],gz=+c[6];const ta=c.length>=8?+c[7]:Math.sqrt(ax*ax+ay*ay+az*az);const tg=c.length>=9?+c[8]:Math.sqrt(gx*gx+gy*gy+gz*gz);r.push({ts:+c[0],ax,ay,az,gx,gy,gz,ta,tg})}return r}
 function detectImpact(d){let m=0,idx=0;d.forEach((v,i)=>{if(v.ta>m){m=v.ta;idx=i}});return idx}
 
+function detectClub(filename){
+  const n=filename.toLowerCase();
+  const clubs=[
+    {keys:['driver','dr','1w'],name:'Driver',icon:'🪵'},
+    {keys:['3w','3wood','fairway3'],name:'3W',icon:'🪵'},
+    {keys:['5w','5wood','fairway5'],name:'5W',icon:'🪵'},
+    {keys:['7w','7wood'],name:'7W',icon:'🪵'},
+    {keys:['3i','iron3','3iron'],name:'3I',icon:'🏌️'},
+    {keys:['4i','iron4','4iron'],name:'4I',icon:'🏌️'},
+    {keys:['5i','iron5','5iron'],name:'5I',icon:'🏌️'},
+    {keys:['6i','iron6','6iron'],name:'6I',icon:'🏌️'},
+    {keys:['7i','iron7','7iron'],name:'7I',icon:'🏌️'},
+    {keys:['8i','iron8','8iron'],name:'8I',icon:'🏌️'},
+    {keys:['9i','iron9','9iron'],name:'9I',icon:'🏌️'},
+    {keys:['pw','pitching'],name:'PW',icon:'🏌️'},
+    {keys:['aw','approach','50','52'],name:'AW',icon:'⛳'},
+    {keys:['sw','sand','56'],name:'SW',icon:'⛳'},
+    {keys:['lw','lob','58','60'],name:'LW',icon:'⛳'},
+    {keys:['pt','putter','putt'],name:'PT',icon:'🏌️'},
+    {keys:['ut','utility','hybrid','hy'],name:'UT',icon:'🪵'},
+  ];
+  for(const c of clubs){if(c.keys.some(k=>n.includes(k)))return c}
+  return {keys:[],name:'--',icon:'🏌️'};
+}
+
 function loadFiles(files){
   Array.from(files).forEach(f=>{const r=new FileReader();r.onload=e=>{
     const data=parseCSV(e.target.result);if(!data.length)return;
-    sets.push({name:f.name,data,mxA:Math.max(...data.map(d=>d.ta),.001),mxG:Math.max(...data.map(d=>d.tg),.001),impIdx:detectImpact(data),col:COLS[sets.length%COLS.length]});
+    const club=detectClub(f.name);
+    sets.push({name:f.name,data,club,mxA:Math.max(...data.map(d=>d.ta),.001),mxG:Math.max(...data.map(d=>d.tg),.001),impIdx:detectImpact(data),col:COLS[sets.length%COLS.length]});
     aIdx=sets.length-1;onDataChange()};r.readAsText(f)});
 }
-function clearAll(){sets=[];aIdx=0;prog=0;playing=false;document.getElementById('emp').style.display='flex';document.getElementById('tlbar').style.display='none';document.getElementById('bcl').style.display='none';document.getElementById('fcnt').textContent='';document.getElementById('fls').innerHTML='';updMetrics();clearTrail()}
-function onDataChange(){document.getElementById('emp').style.display='none';document.getElementById('tlbar').style.display='flex';document.getElementById('bcl').style.display='';document.getElementById('fcnt').textContent=sets.length+' file'+(sets.length>1?'s':'');updMetrics();updFileList();drawCharts();buildTrail();prog=0;updateAt(0)}
+function clearAll(){sets=[];aIdx=0;document.getElementById('emp').style.display='';document.getElementById('dataContent').style.display='none';document.getElementById('bcl').style.display='none';document.getElementById('fcnt').textContent='';document.getElementById('fls').innerHTML='';lastAnalysis=null;updMetrics()}
+function onDataChange(){document.getElementById('emp').style.display='none';document.getElementById('dataContent').style.display='';document.getElementById('bcl').style.display='';document.getElementById('fcnt').textContent=sets.length+' file'+(sets.length>1?'s':'');updMetrics();updFileList();drawCharts();renderAdvice()}
 
-function updMetrics(){const s=sets[aIdx];if(!s){['xma','xmg','xdu','xsc','xsr','xit'].forEach(id=>document.getElementById(id).innerHTML='--');return}
+function updMetrics(){const s=sets[aIdx];if(!s){['xma','xmg','xdu','xsc','xsr','xit'].forEach(id=>document.getElementById(id).innerHTML='--');document.getElementById('clubName').textContent='--';document.getElementById('clubIcon').textContent='🏌️';document.getElementById('clubFile').textContent='';return}
   const d=s.data,dur=d[d.length-1].ts-d[0].ts;
-  document.getElementById('xma').innerHTML=s.mxA.toFixed(4)+'<span class="mi-u">G</span>';
-  document.getElementById('xmg').innerHTML=s.mxG.toFixed(4)+'<span class="mi-u">r/s</span>';
+  document.getElementById('clubIcon').textContent=s.club.icon;
+  document.getElementById('clubName').textContent=s.club.name;
+  document.getElementById('clubFile').textContent=s.name;
+  document.getElementById('xma').innerHTML=s.mxA.toFixed(2)+'<span class="mi-u">G</span>';
+  document.getElementById('xmg').innerHTML=s.mxG.toFixed(2)+'<span class="mi-u">r/s</span>';
   document.getElementById('xdu').innerHTML=dur.toFixed(2)+'<span class="mi-u">s</span>';
   document.getElementById('xsc').textContent=d.length;
   document.getElementById('xsr').innerHTML=(d.length/dur).toFixed(0)+'<span class="mi-u">Hz</span>';
   document.getElementById('xit').innerHTML=d[s.impIdx].ts.toFixed(3)+'<span class="mi-u">s</span>';
 }
-function updFileList(){document.getElementById('fls').innerHTML='<div class="fl-t">Files</div>'+sets.map((s,i)=>`<div class="fl-i ${i===aIdx?'act':''}" onclick="aIdx=${i};updMetrics();drawCharts();buildTrail();prog=0;updateAt(0)"><div class="fl-d" style="background:${s.col.ta}"></div><div class="fl-n">${s.name}</div></div>`).join('')}
+function updFileList(){document.getElementById('fls').innerHTML='<div class="fl-t">Files</div>'+sets.map((s,i)=>`<div class="fl-i ${i===aIdx?'act':''}" onclick="switchFile(${i})"><div class="fl-d" style="background:${s.col.ta}"></div><div class="fl-n">${s.name}</div></div>`).join('')}
+function switchFile(i){aIdx=i;updMetrics();updFileList();drawCharts();renderAdvice()}
 
 // ===================== CHARTS =====================
 function drawCharts(){drawCh('cv1','i1',['ax','ay','az'],'G');drawCh('cv2','i2',['gx','gy','gz'],'r/s');drawCh('cv3','i3',['ta','tg'],'')}
@@ -209,350 +311,313 @@ function drawCh(cid,iid,keys,unit){
   cx.strokeStyle='rgba(255,255,255,.03)';cx.lineWidth=.5;
   for(let i=0;i<=4;i++){const y=h*i/4;cx.beginPath();cx.moveTo(0,y);cx.lineTo(w,y);cx.stroke()}
   if(gMn<0){const zy=h-((-gMn)/rng)*h;cx.strokeStyle='rgba(255,255,255,.07)';cx.setLineDash([2,2]);cx.beginPath();cx.moveTo(0,zy);cx.lineTo(w,zy);cx.stroke();cx.setLineDash([])}
-  sets.forEach((s,si)=>{const al=sets.length>1?(si===aIdx?1:.2):1;keys.forEach(k=>{cx.strokeStyle=s.col[k];cx.lineWidth=si===aIdx?1.2:.7;cx.globalAlpha=al;cx.beginPath();for(let i=0;i<s.data.length;i++){const x=w*i/(s.data.length-1),y=h-((s.data[i][k]-gMn)/rng)*h;i===0?cx.moveTo(x,y):cx.lineTo(x,y)}cx.stroke()});
-    if(si===aIdx){cx.globalAlpha=1;const ix=w*s.impIdx/(s.data.length-1);cx.strokeStyle='rgba(239,68,68,.4)';cx.lineWidth=1;cx.setLineDash([2,2]);cx.beginPath();cx.moveTo(ix,0);cx.lineTo(ix,h);cx.stroke();cx.setLineDash([]);cx.fillStyle='rgba(239,68,68,.6)';cx.font='500 6px var(--M)';cx.fillText('IMPACT',ix+2,7)}
+  sets.forEach((s,si)=>{const al=sets.length>1?(si===aIdx?1:.2):1;keys.forEach(k=>{cx.strokeStyle=s.col[k];cx.lineWidth=si===aIdx?1.5:.7;cx.globalAlpha=al;cx.beginPath();for(let i=0;i<s.data.length;i++){const x=w*i/(s.data.length-1),y=h-((s.data[i][k]-gMn)/rng)*h;i===0?cx.moveTo(x,y):cx.lineTo(x,y)}cx.stroke()});
+    if(si===aIdx){cx.globalAlpha=1;const ix=w*s.impIdx/(s.data.length-1);cx.strokeStyle='rgba(239,68,68,.4)';cx.lineWidth=1;cx.setLineDash([2,2]);cx.beginPath();cx.moveTo(ix,0);cx.lineTo(ix,h);cx.stroke();cx.setLineDash([]);cx.fillStyle='rgba(239,68,68,.6)';cx.font='500 7px var(--M)';cx.fillText('IMPACT',ix+2,8)}
     cx.globalAlpha=1});
-  // Cursor
-  const s=sets[aIdx],ci=Math.floor(prog*(s.data.length-1)),cx2=w*ci/(s.data.length-1);
-  cx.strokeStyle='rgba(255,255,255,.2)';cx.lineWidth=1;cx.beginPath();cx.moveTo(cx2,0);cx.lineTo(cx2,h);cx.stroke();
 }
 
-// ===================== THREE.JS =====================
-const cv3=document.getElementById('c3d');
-const R=new THREE.WebGLRenderer({canvas:cv3,antialias:true});
-R.setPixelRatio(Math.min(devicePixelRatio,2));
-R.toneMapping=THREE.ACESFilmicToneMapping;
-const sc=new THREE.Scene();
-sc.background=new THREE.Color(0x060a12);
-sc.fog=new THREE.FogExp2(0x060a12,.006);
-const cam=new THREE.PerspectiveCamera(42,1,.1,200);
-cam.position.set(3,3,5);
+// File input handler
+document.getElementById('fi').addEventListener('change',e=>{if(e.target.files.length)loadFiles(e.target.files);e.target.value=''});
+window.addEventListener('resize',()=>{if(sets.length)drawCharts()});
 
-sc.add(new THREE.AmbientLight(0x667788,.8));
-const dl=new THREE.DirectionalLight(0xffffff,1.0);dl.position.set(4,8,5);sc.add(dl);
-const pl=new THREE.PointLight(0x22d97f,.4,12);pl.position.set(-2,4,2);sc.add(pl);
-sc.add(new THREE.GridHelper(8,16,0x2a6b3a,0x1a4a28));
-const gnd=new THREE.Mesh(new THREE.PlaneGeometry(12,12),new THREE.MeshStandardMaterial({color:0x1a5c2a,roughness:.85}));gnd.rotation.x=-Math.PI/2;gnd.position.y=-0.01;sc.add(gnd);
+// ===================== SWING ANALYSIS ENGINE =====================
+let lastAnalysis=null;
 
-// Character removed - focus on trail visualization
-
-// ===================== FRONT DIRECTION MARKERS =====================
-// Target line (front direction = +Z axis)
-const tlGeo=new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0,0.01,-4),new THREE.Vector3(0,0.01,4)]);
-sc.add(new THREE.Line(tlGeo,new THREE.LineBasicMaterial({color:0xffffff,transparent:true,opacity:0.3})));
-
-// Front arrow (larger)
-const arrowPts=[new THREE.Vector3(-0.25,0.02,2.8),new THREE.Vector3(0,0.02,3.5),new THREE.Vector3(0.25,0.02,2.8)];
-const arrowGeo=new THREE.BufferGeometry().setFromPoints(arrowPts);
-sc.add(new THREE.Line(arrowGeo,new THREE.LineBasicMaterial({color:0x44ffaa,transparent:true,opacity:0.6})));
-
-// "TARGET" label sprite (larger)
-const frontCanvas=document.createElement('canvas');frontCanvas.width=256;frontCanvas.height=64;
-const fctx=frontCanvas.getContext('2d');
-fctx.fillStyle='rgba(68,255,170,0.8)';fctx.font='bold 40px sans-serif';fctx.textAlign='center';
-fctx.fillText('TARGET \u25B6',128,45);
-const frontTex=new THREE.CanvasTexture(frontCanvas);
-const frontSprite=new THREE.Sprite(new THREE.SpriteMaterial({map:frontTex,transparent:true,opacity:0.7}));
-frontSprite.position.set(0,0.3,4.0);frontSprite.scale.set(1.8,0.45,1);
-sc.add(frontSprite);
-
-// Ball position marker
-const ballGeo=new THREE.RingGeometry(0.06,0.08,16);
-const ballMat=new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:0.5,side:THREE.DoubleSide});
-const ballMk=new THREE.Mesh(ballGeo,ballMat);
-ballMk.rotation.x=-Math.PI/2;ballMk.position.set(0,0.02,0);
-sc.add(ballMk);
-
-// Stance line
-const stGeo=new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(-1.5,0.01,0),new THREE.Vector3(1.5,0.01,0)]);
-sc.add(new THREE.Line(stGeo,new THREE.LineBasicMaterial({color:0xffffff,transparent:true,opacity:0.15})));
-
-// ===================== BEAR CHARACTER =====================
-const bearG=new THREE.Group();
-const bearMat=new THREE.MeshStandardMaterial({color:0x8B6914,roughness:0.8});
-const bearMatDark=new THREE.MeshStandardMaterial({color:0x6B4F12,roughness:0.8});
-const bearMatLight=new THREE.MeshStandardMaterial({color:0xC4A35A,roughness:0.7});
-const bearMatBlack=new THREE.MeshBasicMaterial({color:0x111111});
-const bearMatPink=new THREE.MeshStandardMaterial({color:0xE8A0A0,roughness:0.6});
-
-// Body
-const body=new THREE.Mesh(new THREE.SphereGeometry(0.18,12,12),bearMat);
-body.scale.set(1,1.2,0.9);body.position.y=0.35;
-bearG.add(body);
-
-// Belly
-const belly=new THREE.Mesh(new THREE.SphereGeometry(0.12,10,10),bearMatLight);
-belly.position.set(0,0.32,0.08);
-bearG.add(belly);
-
-// Head
-const head=new THREE.Mesh(new THREE.SphereGeometry(0.14,12,12),bearMat);
-head.position.y=0.62;
-bearG.add(head);
-
-// Muzzle (snout)
-const muzzle=new THREE.Mesh(new THREE.SphereGeometry(0.06,8,8),bearMatLight);
-muzzle.position.set(0,0.59,0.12);muzzle.scale.set(1,0.8,0.8);
-bearG.add(muzzle);
-
-// Nose
-const nose=new THREE.Mesh(new THREE.SphereGeometry(0.025,8,8),bearMatBlack);
-nose.position.set(0,0.61,0.17);
-bearG.add(nose);
-
-// Eyes
-const eyeL=new THREE.Mesh(new THREE.SphereGeometry(0.02,8,8),bearMatBlack);
-eyeL.position.set(-0.05,0.66,0.11);bearG.add(eyeL);
-const eyeR=new THREE.Mesh(new THREE.SphereGeometry(0.02,8,8),bearMatBlack);
-eyeR.position.set(0.05,0.66,0.11);bearG.add(eyeR);
-
-// Eye highlights
-const eyeHL=new THREE.Mesh(new THREE.SphereGeometry(0.008,6,6),new THREE.MeshBasicMaterial({color:0xffffff}));
-eyeHL.position.set(-0.045,0.668,0.125);bearG.add(eyeHL);
-const eyeHR=new THREE.Mesh(new THREE.SphereGeometry(0.008,6,6),new THREE.MeshBasicMaterial({color:0xffffff}));
-eyeHR.position.set(0.055,0.668,0.125);bearG.add(eyeHR);
-
-// Ears
-const earL=new THREE.Mesh(new THREE.SphereGeometry(0.05,8,8),bearMat);
-earL.position.set(-0.1,0.75,0);bearG.add(earL);
-const earLi=new THREE.Mesh(new THREE.SphereGeometry(0.03,8,8),bearMatPink);
-earLi.position.set(-0.1,0.75,0.02);bearG.add(earLi);
-const earR=new THREE.Mesh(new THREE.SphereGeometry(0.05,8,8),bearMat);
-earR.position.set(0.1,0.75,0);bearG.add(earR);
-const earRi=new THREE.Mesh(new THREE.SphereGeometry(0.03,8,8),bearMatPink);
-earRi.position.set(0.1,0.75,0.02);bearG.add(earRi);
-
-// Arms - address pose (hands forward, holding club)
-const armL=new THREE.Mesh(new THREE.CylinderGeometry(0.04,0.04,0.18,8),bearMat);
-armL.position.set(-0.2,0.38,0.1);armL.rotation.x=-0.6;armL.rotation.z=0.4;
-bearG.add(armL);
-const armR=new THREE.Mesh(new THREE.CylinderGeometry(0.04,0.04,0.18,8),bearMat);
-armR.position.set(0.2,0.38,0.1);armR.rotation.x=-0.6;armR.rotation.z=-0.4;
-bearG.add(armR);
-
-// Legs
-const legL=new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.05,0.14,8),bearMat);
-legL.position.set(-0.09,0.12,0);bearG.add(legL);
-const legR=new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.05,0.14,8),bearMat);
-legR.position.set(0.09,0.12,0);bearG.add(legR);
-
-// Feet
-const footL=new THREE.Mesh(new THREE.SphereGeometry(0.04,8,8),bearMatDark);
-footL.position.set(-0.09,0.03,0.03);footL.scale.set(1,0.6,1.3);bearG.add(footL);
-const footR=new THREE.Mesh(new THREE.SphereGeometry(0.04,8,8),bearMatDark);
-footR.position.set(0.09,0.03,0.03);footR.scale.set(1,0.6,1.3);bearG.add(footR);
-
-// Golf club in hands
-const shaft=new THREE.Mesh(new THREE.CylinderGeometry(0.008,0.008,0.5,6),new THREE.MeshStandardMaterial({color:0xcccccc,metalness:0.6}));
-shaft.position.set(0,0.22,0.22);shaft.rotation.x=-0.8;
-bearG.add(shaft);
-const clubHead=new THREE.Mesh(new THREE.BoxGeometry(0.06,0.02,0.04),new THREE.MeshStandardMaterial({color:0x333333,metalness:0.5}));
-clubHead.position.set(0,0.02,0.42);
-bearG.add(clubHead);
-
-// Position bear - right-handed stance (left shoulder toward target +Z)
-bearG.position.set(0,0,-0.3);
-bearG.rotation.y=0; // 180+180=360
-sc.add(bearG);
-
-// ===================== SWING TRAIL (ribbon/fan) =====================
-const TM=3000;
-const tP=new Float32Array(TM*3),tC=new Float32Array(TM*3);
-const tG=new THREE.BufferGeometry();
-tG.setAttribute('position',new THREE.BufferAttribute(tP,3));
-tG.setAttribute('color',new THREE.BufferAttribute(tC,3));
-tG.setDrawRange(0,0);
-const tLine=new THREE.Line(tG,new THREE.LineBasicMaterial({vertexColors:true,transparent:true,opacity:.3}));
-sc.add(tLine);
-
-let ribbon=null;
-function updateRibbon(endIdx){
-  if(ribbon){sc.remove(ribbon);ribbon=null}
-  if(endIdx<4||!trailPts.length)return;
-  const raw=trailPts.slice(0,endIdx+1);
-  const step=Math.max(1,Math.floor(raw.length/120));
-  const pts=[];
-  for(let i=0;i<raw.length;i+=step)pts.push(new THREE.Vector3(raw[i].x,raw[i].y,raw[i].z));
-  if(pts.length<3)return;
-  try{
-    const grp=new THREE.Group();
-    const s=sets[aIdx],mxa=s?s.mxA:1;
-    
-    // Main trail: thick glowing tube
-    const curve=new THREE.CatmullRomCurve3(pts);
-    const tubeGeo=new THREE.TubeGeometry(curve,pts.length*2,0.025,8,false);
-    const tubeMat=new THREE.MeshBasicMaterial({color:0x44ffaa,transparent:true,opacity:0.8});
-    grp.add(new THREE.Mesh(tubeGeo,tubeMat));
-    
-    // Outer glow tube
-    const glowGeo=new THREE.TubeGeometry(curve,pts.length*2,0.06,8,false);
-    const glowMat=new THREE.MeshBasicMaterial({color:0x22d97f,transparent:true,opacity:0.15});
-    grp.add(new THREE.Mesh(glowGeo,glowMat));
-    
-    // Color-coded trail line (acceleration heat)
-    const lineColors=[];
-    const curvePts=curve.getPoints(pts.length*2);
-    for(let i=0;i<curvePts.length;i++){
-      const t=i/(curvePts.length-1);
-      const di=Math.min(Math.floor(t*(s.data.length-1)),s.data.length-1);
-      const intensity=s.data[di].ta/mxa;
-      // Green -> Yellow -> Red
-      if(intensity<0.5){
-        lineColors.push(0.1+intensity*1.8, 0.9, 0.3);
-      } else {
-        lineColors.push(1.0, 1.0-(intensity-0.5)*1.6, 0.1);
-      }
-    }
-    const lineGeo=new THREE.BufferGeometry().setFromPoints(curvePts);
-    lineGeo.setAttribute('color',new THREE.Float32BufferAttribute(lineColors,3));
-    grp.add(new THREE.Line(lineGeo,new THREE.LineBasicMaterial({vertexColors:true,transparent:true,opacity:0.9})));
-    
-    ribbon=grp;sc.add(ribbon);
-  }catch(e){console.log('trail err',e)}
-}
-
-const mk=new THREE.Mesh(new THREE.SphereGeometry(.05,12,12),new THREE.MeshBasicMaterial({color:0x44ffaa}));
-const mkG=new THREE.Mesh(new THREE.SphereGeometry(.12,12,12),new THREE.MeshBasicMaterial({color:0x22d97f,transparent:true,opacity:.2}));
-mk.add(mkG);mk.visible=false;sc.add(mk);
-
-const impFlash=new THREE.Mesh(new THREE.SphereGeometry(.15,16,16),new THREE.MeshBasicMaterial({color:0xffaa00,transparent:true,opacity:0}));
-sc.add(impFlash);
-
-// Compute swing arc from gyro data - swing zone only
-let trailPts=[];
-let swingStart=0, swingEnd=0;
-function buildTrail(){
-  trailPts=[];
-  const s=sets[aIdx];if(!s)return;
+function analyzeSwing(){
+  const s=sets[aIdx];if(!s)return null;
   const d=s.data;
-  
-  // Detect swing zone: time-based around impact
   const impIdx=s.impIdx;
   const impTime=d[impIdx].ts;
+  const dur=d[d.length-1].ts-d[0].ts;
   
-  // Find start: 1.5 seconds before impact
-  swingStart=0;
-  for(let i=impIdx;i>=0;i--){
-    if(impTime-d[i].ts>=1.5){swingStart=i;break}
-  }
-  // Find end: 0.8 seconds after impact
-  swingEnd=d.length-1;
-  for(let i=impIdx;i<d.length;i++){
-    if(d[i].ts-impTime>=0.8){swingEnd=i;break}
-  }
+  const takebackTime=impTime-d[0].ts;
+  const followTime=d[d.length-1].ts-impTime;
+  const tempoRatio=takebackTime/Math.max(followTime,0.01);
+  const maxAcc=s.mxA;
+  const maxGyro=s.mxG;
   
-  // Integrate gyro from start to get correct starting angles
-  let angX=0,angY=0,angZ=0;
-  for(let i=0;i<swingStart;i++){
-    const dt=i>0?(d[i].ts-d[i-1].ts):0.01;
-    angX+=d[i].gx*dt; angY+=d[i].gy*dt; angZ+=d[i].gz*dt;
-  }
+  let maxGzIdx=0,maxGz=0;
+  d.forEach((v,i)=>{const ag=Math.abs(v.gz);if(ag>maxGz){maxGz=ag;maxGzIdx=i}});
+  const releaseOffset=(d[maxGzIdx].ts-impTime)*1000;
   
-  // Build trail for swing zone only
-  for(let i=swingStart;i<=swingEnd;i++){
-    const dt=i>0?(d[i].ts-d[i-1].ts):0.01;
-    angX+=d[i].gx*dt; angY+=d[i].gy*dt; angZ+=d[i].gz*dt;
-    trailPts.push({x:Math.sin(angY)*0.7+Math.sin(angZ)*0.2, y:Math.sin(angX)*0.4+Math.cos(angY)*0.3, z:Math.cos(angY)*0.5, si:i});
-  }
-  if(!trailPts.length)return;
+  let totalJerk=0;
+  for(let i=1;i<d.length;i++){const dt=d[i].ts-d[i-1].ts;if(dt<=0)continue;totalJerk+=Math.abs(d[i].ta-d[i-1].ta)/dt}
+  const avgJerk=totalJerk/(d.length-1);
   
-  // Auto-scale to fit 3 units, center at 1.5 above ground
-  let mnX=Infinity,mxX=-Infinity,mnY=Infinity,mxY=-Infinity,mnZ=Infinity,mxZ=-Infinity;
-  trailPts.forEach(p=>{if(p.x<mnX)mnX=p.x;if(p.x>mxX)mxX=p.x;if(p.y<mnY)mnY=p.y;if(p.y>mxY)mxY=p.y;if(p.z<mnZ)mnZ=p.z;if(p.z>mxZ)mxZ=p.z});
-  const cxC=(mnX+mxX)/2,cyC=(mnY+mxY)/2,czC=(mnZ+mxZ)/2;
-  const span=Math.max(mxX-mnX,mxY-mnY,mxZ-mnZ,0.001);
-  const scale=3.0/span;
-  trailPts.forEach(p=>{p.x=(p.x-cxC)*scale;p.y=(p.y-cyC)*scale+1.5;p.z=(p.z-czC)*scale});
+  let postImpAcc=0,postCnt=0;
+  for(let i=impIdx;i<Math.min(impIdx+30,d.length);i++){postImpAcc+=d[i].ta;postCnt++}
+  const avgPostImp=postCnt?postImpAcc/postCnt:0;
   
-  // Fill buffer
-  const mxa=s.mxA;
-  for(let i=0;i<trailPts.length&&i<TM;i++){
-    tP[i*3]=trailPts[i].x;tP[i*3+1]=trailPts[i].y;tP[i*3+2]=trailPts[i].z;
-    tCol(i,s.data[trailPts[i].si].ta/mxa);
-  }
-  tG.attributes.position.needsUpdate=true;
-  tG.attributes.color.needsUpdate=true;
-  mk.visible=true;
-  // Build full ribbon immediately
-  updateRibbon(trailPts.length-1);
+  const scores={};
+  if(tempoRatio>=2.5&&tempoRatio<=3.5)scores.tempo=90+Math.random()*10;
+  else if(tempoRatio>=2&&tempoRatio<=4)scores.tempo=70+Math.random()*10;
+  else if(tempoRatio>=1.5&&tempoRatio<=5)scores.tempo=50+Math.random()*10;
+  else scores.tempo=30+Math.random()*10;
+  
+  scores.power=Math.min(100,maxAcc/20*100);
+  scores.rotation=Math.min(100,maxGyro/50*100);
+  
+  if(Math.abs(releaseOffset)<=30)scores.release=90+Math.random()*8;
+  else if(Math.abs(releaseOffset)<=60)scores.release=70+Math.random()*10;
+  else if(Math.abs(releaseOffset)<=100)scores.release=50+Math.random()*10;
+  else scores.release=30+Math.random()*10;
+  
+  scores.smoothness=Math.max(10,100-avgJerk*0.5);
+  scores.followthrough=Math.min(100,avgPostImp/maxAcc*200);
+  
+  Object.keys(scores).forEach(k=>scores[k]=Math.round(Math.min(100,Math.max(0,scores[k]))));
+  const overall=Math.round(Object.values(scores).reduce((a,b)=>a+b,0)/Object.keys(scores).length);
+  
+  const tips={};
+  tips.tempo=tempoRatio<2?'テイクバックが速すぎます。3:1のリズムを意識しましょう':tempoRatio>4?'テイクバックが遅すぎます。もう少しテンポよく振りましょう':'テンポは良好です。このリズムを維持しましょう';
+  tips.power=maxAcc<5?'インパクトの加速が弱いです。下半身からの連動を意識しましょう':maxAcc<10?'まずまずのパワーです。腰の回転をもっと使いましょう':'パワフルなスイングです！';
+  tips.rotation=maxGyro<20?'回転が不足しています。肩の回転を大きくしましょう':maxGyro<35?'回転は平均的です。もう少し体を捻転させましょう':'十分な回転速度です！';
+  tips.release=releaseOffset<-50?'リリースが早すぎます。ダウンスイング初期で手首の角度を保ちましょう':releaseOffset>50?'リリースが遅すぎます。インパクト直前で解放しましょう':'リリースタイミングは良好です！';
+  tips.smoothness=scores.smoothness<50?'スイングにぎこちなさがあります。力まずリラックスして振りましょう':scores.smoothness<75?'概ねスムーズですが、切り返しをもう少し滑らかに':'とても滑らかなスイングです！';
+  tips.followthrough=scores.followthrough<50?'フォロースルーが小さいです。振り抜くことを意識しましょう':'しっかり振り抜けています！';
+  
+  // Detailed advice per item (shown on click)
+  const details={};
+  details.tempo=tempoRatio<2
+    ?`テンポ比: ${tempoRatio.toFixed(1)}:1（理想は3:1）\n\nテイクバックに十分な時間をかけていません。急いで振ると体の回転が浅くなり、手打ちになりやすいです。\n\n【練習法】メトロノームを60BPMに設定し、1拍目でテイクバック開始、3拍目でトップ、4拍目でインパクトのリズムを繰り返しましょう。`
+    :tempoRatio>4
+    ?`テンポ比: ${tempoRatio.toFixed(1)}:1（理想は3:1）\n\nテイクバックに時間がかかりすぎています。リズムが崩れ、ダウンスイングで力みが生じやすくなります。\n\n【練習法】素振りで「イチ・ニ・サン」のリズムを口に出しながら振りましょう。「サン」でインパクトです。`
+    :`テンポ比: ${tempoRatio.toFixed(1)}:1（理想は3:1）\n\nプロの多くが2.5〜3.5:1のテンポ比です。このリズムを体に覚えさせましょう。\n\n【ポイント】調子が悪い時こそテンポを意識。リズムが安定するとショットの再現性が上がります。`;
+
+  details.power=maxAcc<5
+    ?`最大加速度: ${maxAcc.toFixed(1)}G\n\n地面反力と体の回転を使えていない可能性があります。腕の力だけでは大きな加速は生まれません。\n\n【練習法】\n1. ステップドリル: 左足を踏み込んでからダウンスイング\n2. メディシンボール投げ: 体全体の連動を体感\n3. ハーフスイングから徐々にフルスイングへ`
+    :maxAcc<10
+    ?`最大加速度: ${maxAcc.toFixed(1)}G\n\nアマチュア平均レベルのパワーです。下半身リードをさらに意識すると飛距離アップが見込めます。\n\n【練習法】\n1. 右足の蹴りを意識したドリル\n2. 左腰を先行させるイメージで素振り\n3. ヘッドの重さを感じてリリース`
+    :`最大加速度: ${maxAcc.toFixed(1)}G\n\nしっかりとした加速が出ています。パワーは十分なので、方向性の安定に注力しましょう。\n\n【ポイント】パワーがある分、テンポが速くなりがちです。8割の力感で振ることで安定性が上がります。`;
+
+  details.rotation=maxGyro<20
+    ?`最大角速度: ${maxGyro.toFixed(1)} rad/s\n\n体の回転が浅く、手だけでスイングしている可能性があります。\n\n【練習法】\n1. バックスイングで左肩をあごの下まで回す\n2. 胸の向きを90度以上ターンさせる意識\n3. クラブを肩に乗せて回転ドリル`
+    :maxGyro<35
+    ?`最大角速度: ${maxGyro.toFixed(1)} rad/s\n\n回転はありますが、もう少し捻転差を作ると飛距離が伸びます。\n\n【練習法】\n1. 下半身を固定して上体だけ回す素振り\n2. 左足のつま先を少し開いてフォローの回転を大きく`
+    :`最大角速度: ${maxGyro.toFixed(1)} rad/s\n\n十分な回転速度が出ています。これ以上の回転を求めるより、回転軸の安定を意識しましょう。`;
+
+  details.release=releaseOffset<-50
+    ?`リリースオフセット: ${releaseOffset.toFixed(0)}ms（インパクトより${Math.abs(releaseOffset).toFixed(0)}ms早い）\n\nダウンスイングの早い段階で手首が解けています（キャスティング）。パワーロスとスライスの原因になります。\n\n【練習法】\n1. 右手の親指でシャフトを押さえる感覚を保つ\n2. ダウンスイングでグリップエンドをボールに向ける意識\n3. パンチショットドリル`
+    :releaseOffset>50
+    ?`リリースオフセット: ${releaseOffset.toFixed(0)}ms（インパクトより${releaseOffset.toFixed(0)}ms遅い）\n\nリリースが遅すぎて、フェースが開いたままインパクトしています。プッシュアウトの原因になります。\n\n【練習法】\n1. 左手の甲を地面に向けるイメージでリリース\n2. 9時〜3時の振り幅でリリース感を練習`
+    :`リリースオフセット: ${releaseOffset.toFixed(0)}ms\n\nインパクト付近で正しくリリースできています。手首のタメと解放のバランスが良好です。\n\n【ポイント】この感覚を再現できるよう、9時〜3時のハーフショットでリリース感を体に覚えさせましょう。`;
+
+  details.smoothness=scores.smoothness<50
+    ?`ジャーク指標: ${avgJerk.toFixed(1)}\n\n加速度の変化が急激で、スイングに「ガクッ」とした動きがあります。力みが原因の可能性が高いです。\n\n【練習法】\n1. グリッププレッシャーを10段階の4程度に\n2. 連続素振りで滑らかなリズムを作る\n3. 目を閉じて素振りし、体の動きに集中`
+    :scores.smoothness<75
+    ?`ジャーク指標: ${avgJerk.toFixed(1)}\n\n概ねスムーズですが、切り返し付近でやや急な動きがあります。\n\n【練習法】切り返しで一瞬「間」を作る意識。トップで0.1秒だけ待つイメージが有効です。`
+    :`ジャーク指標: ${avgJerk.toFixed(1)}\n\nとても滑らかなスイングです。加速度の変化が穏やかで、効率的にエネルギーを伝えられています。`;
+
+  details.followthrough=scores.followthrough<50
+    ?`フォロースルー平均加速度: ${avgPostImp.toFixed(2)}G\n\nインパクト後に急減速しています。ボールを「打って終わり」ではなく、「振り抜く」意識が必要です。\n\n【練習法】\n1. フィニッシュで3秒間静止するドリル\n2. 左肩の上にクラブが収まるフィニッシュを意識\n3. 目標の先に振り抜くイメージ`
+    :`フォロースルー平均加速度: ${avgPostImp.toFixed(2)}G\n\nしっかり振り抜けています。フォロースルーが大きいと、インパクトゾーンが長くなり方向性も安定します。`;
+  
+  const labels={tempo:'テンポ',power:'パワー',rotation:'回転速度',release:'リリース',smoothness:'スムーズさ',followthrough:'フォロースルー'};
+  const colors={tempo:'var(--cy)',power:'var(--or)',rotation:'var(--pu)',release:'var(--g)',smoothness:'var(--bl)',followthrough:'var(--pk)'};
+  
+  lastAnalysis={scores,overall,tips,details,labels,colors,raw:{tempoRatio,maxAcc,maxGyro,releaseOffset,avgJerk,avgPostImp,dur,impTime}};
+  return lastAnalysis;
 }
-function tCol(i,t){tC[i*3]=.13+t*.87;tC[i*3+1]=.85-t*.5;tC[i*3+2]=.5-t*.3}
-function clearTrail(){tG.setDrawRange(0,0);mk.visible=false;trailPts=[];if(ribbon){sc.remove(ribbon);ribbon=null}impFlash.material.opacity=0}
 
-// ===================== PHASE =====================
-function getPhase(idx){const s=sets[aIdx];if(!s)return'READY';const p=idx/s.data.length,t2=s.data[idx].ta/s.mxA;if(p<.05)return'ADDRESS';if(p<.35)return'BACKSWING';if(p<.5&&t2>.4)return'TRANSITION';if(p<.6)return'DOWNSWING';if(t2>.65)return'IMPACT';if(p<.85)return'FOLLOW-THROUGH';return'FINISH'}
-const phCo={'READY':'#4e6180','ADDRESS':'#3b82f6','BACKSWING':'#06b6d4','TRANSITION':'#f59e0b','DOWNSWING':'#f59e0b','IMPACT':'#ef4444','FOLLOW-THROUGH':'#a855f7','FINISH':'#22d97f'};
-
-function updateAt(t){
-  if(!sets.length)return;
-  const s=sets[aIdx];
-  const idx=Math.min(Math.floor(t*(s.data.length-1)),s.data.length-1);
-  const d=s.data[idx];
+function renderAdvice(){
+  const a=analyzeSwing();if(!a)return;
   
-  // Map data index to trail index (trail only covers swing zone)
-  const tIdx=Math.max(0,Math.min(idx-swingStart,trailPts.length-1));
-  const inSwing=idx>=swingStart&&idx<=swingEnd;
+  const ring=document.getElementById('advRing');
+  ring.textContent=a.overall;
+  ring.style.borderColor=a.overall>=80?'var(--g)':a.overall>=60?'var(--or)':'var(--rd)';
+  ring.style.color=a.overall>=80?'var(--g)':a.overall>=60?'var(--or)':'var(--rd)';
   
-  if(inSwing&&trailPts.length>0){
-    tG.setDrawRange(0,tIdx+1);
-    if(tIdx%20===0||tIdx===trailPts.length-1)updateRibbon(tIdx);
-    if(trailPts[tIdx])mk.position.set(trailPts[tIdx].x,trailPts[tIdx].y,trailPts[tIdx].z);
-    mk.visible=true;
-  } else {
-    tG.setDrawRange(0,0);
-    mk.visible=idx>swingEnd&&trailPts.length>0;
-    if(mk.visible){const last=trailPts[trailPts.length-1];mk.position.set(last.x,last.y,last.z)}
-    if(idx>swingEnd)updateRibbon(trailPts.length-1);
-    else if(ribbon){sc.remove(ribbon);ribbon=null}
-  }
+  const grade=a.overall>=90?'Excellent!':a.overall>=80?'Great!':a.overall>=70?'Good':a.overall>=60?'Fair':a.overall>=50?'Needs Work':'Practice More';
+  document.getElementById('advGrade').textContent=grade;
+  document.getElementById('advSummary').textContent=`テンポ比 ${a.raw.tempoRatio.toFixed(1)}:1 / 最大${a.raw.maxAcc.toFixed(1)}G / ${a.raw.dur.toFixed(1)}秒`;
   
-  // Impact flash
-  const impDist=Math.abs(idx-s.impIdx);
-  if(impDist<10&&mk.visible){impFlash.material.opacity=Math.max(0,(10-impDist)/10*0.6);impFlash.position.copy(mk.position);impFlash.scale.setScalar(1+impDist*0.1)}else{impFlash.material.opacity=0}
-  const ph=getPhase(idx);
-  const pe=document.getElementById('plbl');pe.textContent=ph;pe.style.color=phCo[ph]||'#4e6180';pe.style.background=(phCo[ph]||'#4e6180')+'15';
-  document.getElementById('va').innerHTML=d.ta.toFixed(4)+'<span class="u">G</span>';
-  document.getElementById('vg').innerHTML=d.tg.toFixed(4)+'<span class="u">r/s</span>';
-  document.getElementById('tfl').style.width=(t*100)+'%';
-  document.getElementById('ttm').textContent=d.ts.toFixed(2)+'s';
-  drawCharts();
+  const cont=document.getElementById('advItems');
+  cont.innerHTML='';
+  Object.keys(a.scores).forEach(k=>{
+    const sc=a.scores[k];
+    const cls=sc>=75?'s-good':sc>=50?'s-ok':'s-bad';
+    const detailText=(a.details[k]||'').replace(/\n/g,'<br>');
+    cont.innerHTML+=`<div class="adv-item" onclick="this.querySelector('.adv-detail').classList.toggle('open')">
+      <div class="adv-item-h"><span class="adv-item-n">${a.labels[k]}</span><span class="adv-item-s ${cls}">${sc}/100</span></div>
+      <div class="adv-bar"><div class="adv-bar-f" style="width:${sc}%;background:${a.colors[k]}"></div></div>
+      <div class="adv-tip">${a.tips[k]}</div>
+      <div class="adv-detail"><div class="adv-detail-inner">${detailText}</div></div>
+    </div>`;
+  });
+  
+  document.getElementById('aiRes').style.display='none';
+  document.getElementById('aiBtn').disabled=false;
+  drawRadar(a);
 }
 
-function togglePlay(){playing=!playing;document.getElementById('bp').innerHTML=playing?'&#9646;&#9646;':'&#9654;';if(playing){if(prog>=.99)prog=0;lastT=performance.now()}}
-function tickPlay(now){if(!playing||!sets.length)return;const s=sets[aIdx],dt=(now-lastT)/1000;lastT=now;const dur=s.data[s.data.length-1].ts-s.data[0].ts;prog+=(dt*spd)/dur;if(prog>=1){prog=1;playing=false;document.getElementById('bp').innerHTML='&#9654;'}updateAt(prog)}
+function drawRadar(a){
+  const wrap=document.getElementById('radarWrap');
+  wrap.style.display='';
+  const cv=document.getElementById('radarCv');
+  const pr=devicePixelRatio||1;
+  const size=Math.min(300,wrap.clientWidth-28);
+  cv.width=size*pr;cv.height=size*pr;
+  cv.style.width=size+'px';cv.style.height=size+'px';
+  const cx=cv.getContext('2d');
+  cx.scale(pr,pr);
+  
+  const keys=Object.keys(a.scores);
+  const n=keys.length;
+  const centerX=size/2, centerY=size/2;
+  const radius=size/2-44;
+  const angleStep=Math.PI*2/n;
+  const startAngle=-Math.PI/2;
+  
+  function pt(i,val){
+    const ang=startAngle+angleStep*i;
+    const r=radius*val/100;
+    return {x:centerX+Math.cos(ang)*r, y:centerY+Math.sin(ang)*r};
+  }
+  
+  cx.clearRect(0,0,size,size);
+  
+  // Grid rings
+  [20,40,60,80,100].forEach(v=>{
+    cx.beginPath();
+    for(let i=0;i<=n;i++){
+      const p=pt(i%n,v);
+      i===0?cx.moveTo(p.x,p.y):cx.lineTo(p.x,p.y);
+    }
+    cx.closePath();
+    cx.strokeStyle=v===60?'rgba(255,255,255,.25)':'rgba(255,255,255,.12)';
+    cx.lineWidth=v===60?1.2:.7;
+    cx.stroke();
+  });
+  
+  // Axis lines
+  for(let i=0;i<n;i++){
+    const p=pt(i,100);
+    cx.beginPath();cx.moveTo(centerX,centerY);cx.lineTo(p.x,p.y);
+    cx.strokeStyle='rgba(255,255,255,.1)';cx.lineWidth=.7;cx.stroke();
+  }
+  
+  // Data fill
+  cx.beginPath();
+  keys.forEach((k,i)=>{
+    const p=pt(i,a.scores[k]);
+    i===0?cx.moveTo(p.x,p.y):cx.lineTo(p.x,p.y);
+  });
+  cx.closePath();
+  cx.fillStyle='rgba(34,217,127,.12)';cx.fill();
+  cx.strokeStyle='rgba(34,217,127,.6)';cx.lineWidth=2;cx.stroke();
+  
+  // Resolve CSS variable colors to hex for canvas
+  const colorHex={tempo:'#06b6d4',power:'#f59e0b',rotation:'#a855f7',release:'#22d97f',smoothness:'#3b82f6',followthrough:'#ec4899'};
+  function scColor(sc){return sc>=75?'#22d97f':sc>=50?'#f59e0b':'#ef4444'}
+  
+  // Data points (larger for tap target)
+  const hitAreas=[];
+  keys.forEach((k,i)=>{
+    const p=pt(i,a.scores[k]);
+    cx.beginPath();cx.arc(p.x,p.y,6,0,Math.PI*2);
+    cx.fillStyle=scColor(a.scores[k]);
+    cx.fill();
+    cx.strokeStyle='rgba(0,0,0,.4)';cx.lineWidth=1.5;cx.stroke();
+    cx.beginPath();cx.arc(p.x,p.y-1,2,0,Math.PI*2);
+    cx.fillStyle='rgba(255,255,255,.35)';cx.fill();
+    hitAreas.push({x:p.x,y:p.y,idx:i,key:k});
+  });
+  
+  // Labels
+  cx.textAlign='center';cx.textBaseline='middle';
+  keys.forEach((k,i)=>{
+    const ang=startAngle+angleStep*i;
+    const labelR=radius+28;
+    const lx=centerX+Math.cos(ang)*labelR;
+    const ly=centerY+Math.sin(ang)*labelR;
+    cx.font='600 11px Outfit,sans-serif';
+    cx.fillStyle=colorHex[k];
+    cx.fillText(a.labels[k],lx,ly-7);
+    cx.font='700 12px JetBrains Mono,monospace';
+    cx.fillStyle=scColor(a.scores[k]);
+    cx.fillText(a.scores[k],lx,ly+8);
+  });
+  
+  // Store hit areas for click handling
+  cv._hitAreas=hitAreas;
+  cv._pr=pr;
+}
 
-// ===================== CAMERA =====================
-let dr=false,pm={x:0,y:0},cTh=Math.PI,cPh=.4,cD=5.5;
-cv3.addEventListener('mousedown',e=>{dr=true;pm={x:e.clientX,y:e.clientY}});
-window.addEventListener('mousemove',e=>{if(!dr)return;cTh-=(e.clientX-pm.x)*.005;cPh=Math.max(.05,Math.min(Math.PI/2-.05,cPh+(e.clientY-pm.y)*.005));pm={x:e.clientX,y:e.clientY}});
-window.addEventListener('mouseup',()=>dr=false);
-cv3.addEventListener('wheel',e=>{e.preventDefault();cD=Math.max(1.5,Math.min(10,cD+e.deltaY*.006))},{passive:false});
-cv3.addEventListener('touchstart',e=>{if(e.touches.length===1){dr=true;pm={x:e.touches[0].clientX,y:e.touches[0].clientY}}});
-cv3.addEventListener('touchmove',e=>{if(!dr||e.touches.length!==1)return;cTh-=(e.touches[0].clientX-pm.x)*.005;cPh=Math.max(.05,Math.min(Math.PI/2-.05,cPh+(e.touches[0].clientY-pm.y)*.005));pm={x:e.touches[0].clientX,y:e.touches[0].clientY}});
-cv3.addEventListener('touchend',()=>dr=false);
+// Radar click/touch handler
+function handleRadarTap(e){
+  const cv=document.getElementById('radarCv');
+  if(!cv._hitAreas)return;
+  const rect=cv.getBoundingClientRect();
+  let clientX,clientY;
+  if(e.touches){clientX=e.touches[0].clientX;clientY=e.touches[0].clientY;e.preventDefault()}
+  else{clientX=e.clientX;clientY=e.clientY}
+  const x=clientX-rect.left;
+  const y=clientY-rect.top;
+  const tapRadius=28;
+  for(const h of cv._hitAreas){
+    const dx=x-h.x, dy=y-h.y;
+    if(dx*dx+dy*dy<=tapRadius*tapRadius){
+      document.querySelectorAll('.adv-detail').forEach(d=>d.classList.remove('open'));
+      const items=document.querySelectorAll('.adv-item');
+      if(items[h.idx]){
+        const detail=items[h.idx].querySelector('.adv-detail');
+        if(detail)detail.classList.add('open');
+        items[h.idx].scrollIntoView({behavior:'smooth',block:'center'});
+      }
+      break;
+    }
+  }
+}
+document.getElementById('radarCv').addEventListener('click',handleRadarTap);
+document.getElementById('radarCv').addEventListener('touchstart',handleRadarTap,{passive:false});
 
-// ===================== EVENTS =====================
-document.getElementById('fi').addEventListener('change',e=>{if(e.target.files.length)loadFiles(e.target.files);e.target.value=''});
-document.getElementById('bp').addEventListener('click',togglePlay);
-document.getElementById('spdr').addEventListener('input',e=>{spd=+e.target.value;document.getElementById('svl').textContent=spd.toFixed(1)+'x'});
-document.getElementById('trk').addEventListener('click',e=>{const r=e.currentTarget.getBoundingClientRect();prog=Math.max(0,Math.min(1,(e.clientX-r.left)/r.width));updateAt(prog)});
-document.body.addEventListener('dragover',e=>e.preventDefault());
-document.body.addEventListener('drop',e=>{e.preventDefault();if(e.dataTransfer.files.length)loadFiles(e.dataTransfer.files)});
+// ===================== CLAUDE AI ADVICE =====================
+async function askAI(){
+  if(!lastAnalysis)return;
+  const btn=document.getElementById('aiBtn');
+  const res=document.getElementById('aiRes');
+  btn.disabled=true;btn.textContent='分析中...';
+  res.style.display='';res.textContent='AIがスイングを分析しています...';
+  
+  const a=lastAnalysis;
+  const prompt=`あなたはプロゴルフコーチです。以下のApple Watchセンサーデータから取得したゴルフスイング分析結果に基づいて、具体的で実践的なアドバイスを日本語で提供してください。
 
-// ===================== RENDER =====================
-function resize(){const r=cv3.parentElement.getBoundingClientRect();R.setSize(r.width,r.height);cam.aspect=r.width/r.height;cam.updateProjectionMatrix();drawCharts()}
-window.addEventListener('resize',resize);resize();
+【スイングデータ】
+- スイング時間: ${a.raw.dur.toFixed(2)}秒
+- インパクト時刻: ${a.raw.impTime.toFixed(3)}秒
+- テンポ比（テイクバック:ダウンスイング）: ${a.raw.tempoRatio.toFixed(2)}:1
+- 最大加速度: ${a.raw.maxAcc.toFixed(1)}G
+- 最大角速度: ${a.raw.maxGyro.toFixed(1)} rad/s
+- リリースオフセット: ${a.raw.releaseOffset.toFixed(0)}ms（負=早い、正=遅い）
+- 平均ジャーク: ${a.raw.avgJerk.toFixed(1)}
+- フォロースルー平均加速度: ${a.raw.avgPostImp.toFixed(2)}G
 
-(function loop(now){
-  requestAnimationFrame(loop);
-  tickPlay(now);
-  cam.position.x=Math.sin(cTh)*Math.cos(cPh)*cD;
-  cam.position.y=Math.sin(cPh)*cD;
-  cam.position.z=Math.cos(cTh)*Math.cos(cPh)*cD;
-  cam.lookAt(0,1.5,0);
-  pl.intensity=.22+Math.sin(Date.now()*.001)*.04;
-  R.render(sc,cam);
-})(0);
+【スコア】
+${Object.keys(a.scores).map(k=>`- ${a.labels[k]}: ${a.scores[k]}/100`).join('\n')}
+- 総合: ${a.overall}/100
+
+以下の形式で回答してください:
+1. 総合評価（2-3文）
+2. 良い点（2-3つ）
+3. 改善ポイント（最も重要な2-3つ、具体的な練習方法付き）
+4. 次回の練習で意識すべきこと（1つに絞る）
+
+簡潔に回答してください。`;
+
+  try{
+    const response=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]})
+    });
+    const data=await response.json();
+    const text=data.content?.map(c=>c.text||'').join('\n')||'応答を取得できませんでした';
+    res.textContent=text;
+  }catch(e){
+    res.textContent='エラー: '+e.message;
+  }
+  btn.textContent='\u{1F916} AIに詳細アドバイスを聞く';btn.disabled=false;
+}
 </script>
 <script>if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js')}</script>
 </body>
